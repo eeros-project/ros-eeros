@@ -3,7 +3,7 @@
 
 #include <string>
 #include <eeros/hal/Output.hpp>
-#include <eeros/control/ROS/EerosRosTools.hpp>
+#include <eeros/control/ros/EerosRosTools.hpp>
 #include "RosNodeDevice.hpp"
 #include <ros/ros.h>
 // ROS message types

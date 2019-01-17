@@ -2,7 +2,7 @@
 #define ROS_EEROS_ANALOGOUT_HPP_
 
 #include <eeros/hal/ScalableOutput.hpp>
-#include <eeros/control/ROS/EerosRosTools.hpp>
+#include <eeros/control/ros/EerosRosTools.hpp>
 #include "RosNodeDevice.hpp"
 #include <ros/ros.h>
 // 1.) include ROS message type
