@@ -1,5 +1,5 @@
 # ros-eeros
-[ROS](http://www.ros.org/) wrapper library for [EEROS Robotics Framework](https://github.com/eeros-project/eeros-framework) 
+Wrapper library for [EEROS Robotics Framework](https://github.com/eeros-project/eeros-framework) to interface with [ROS](http://www.ros.org/).
 
 ## Documentation
 - About ROS: http://www.ros.org/
