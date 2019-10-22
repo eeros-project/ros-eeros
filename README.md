@@ -15,6 +15,6 @@ The easiest way to get started using EEROS together with ROS is described in [In
 
 The EEROS [Hardware Abstraction Layer](http://wiki.eeros.org/eeros_architecture/hal/start) needs a [configuration file](http://wiki.eeros.org/eeros_architecture/hal/configuration_file) which describes the hardware. A hardware configuration file for ROS can be found at (https://github.com/eeros-project/eeros-framework/tree/master/examples/ros). It is called *HalConfigRos.json*.
 
-## How to contribute to bbblue-eeros
+## How to contribute to ros-eeros
 
 The [EEROS Team](http://eeros.org/eeros-team/) would love to accept your contributions! The development on the EEROS Framework is done with the work flow “**develop with a fork**”. So please fork the repository, develop and test your code changes. For code quality, please follow the guidelines put together [here](http://wiki.eeros.org/for_developers/start). In general, the code should adheres to the existing style in the project. Once the changes are ready, a pull request is submitted. Each logical change should be submitted separately to ensure that the history will be understandable.
