@@ -5,7 +5,7 @@ project(ros-eeros)
 set(CMAKE_CXX_STANDARD 14)
 
 
-set(RECOMMENDED_EEROS_VERSION 1.1.0.0)
+set(RECOMMENDED_EEROS_VERSION 1.2)
 
 
 # Load CMake modules library at specified version
@@ -34,8 +34,10 @@ setLibraryVersion()
 
 # Find EEROS
 setVersionToFind("EEROS" "REQUIRED_EEROS_VERSION" ${RECOMMENDED_EEROS_VERSION} ${REQUIRED_EEROS_VERSION})
-find_package(EEROS ${VERSION_TO_FIND} EXACT)
+find_package(EEROS ${VERSION_TO_FIND})
 checkIfModuleFound("EEROS" "REQUIRED_EEROS_VERSION")
+set(REQUIRED_DEGREE_OF_VERSION_COMPATIBILITY 2 CACHE STRING "The required degree of EEROS version compatibilty.")
+checkVersionCompatibility(${EEROS_VERSION} ${VERSION_TO_FIND} ${REQUIRED_DEGREE_OF_VERSION_COMPATIBILITY})
 
 
 include_directories(${EEROS_INCLUDE_DIR})
