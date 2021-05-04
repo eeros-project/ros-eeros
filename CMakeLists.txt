@@ -8,14 +8,27 @@ set(CMAKE_CXX_STANDARD 14)
 set(RECOMMENDED_EEROS_VERSION 1.1.0.0)
 
 
+# Load CMake modules library at specified version
+set(LOAD_CMAKE_MODULES_LIB TRUE CACHE BOOL "TRUE if the cmake-modules library should be loaded.")
+
+if(LOAD_CMAKE_MODULES_LIB)
+  include(cmake/CMakeModulesLibLoader.cmake)
+  load_cmake_modules_lib(https://github.com/eeros-project/cmake-modules.git)
+endif()
+
+include(CMakeModulesLib)
+
 if(CMAKE_BUILD_TYPE MATCHES "Debug|DEBUG")
-	set(LOGGER ON)
+  logger_on()
+endif()
+
+if(LOAD_CMAKE_MODULES_LIB)
+  checkout_cmake_modules_lib_version(a50add2)
 endif()
 
 
-include(cmake/versionCheckHelpers.cmake)
-
-
+# Fetch the version information from git tag
+include(VersioningHelpers)
 setLibraryVersion()
 
 
