@@ -23,7 +23,7 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug|DEBUG")
 endif()
 
 if(LOAD_CMAKE_MODULES_LIB)
-  checkout_cmake_modules_lib_version(a50add2)
+  checkout_cmake_modules_lib_version(8fcde84)
 endif()
 
 
