@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.10)
 
 project(ros-eeros)
 
 set(CMAKE_CXX_STANDARD 14)
 
 
-set(RECOMMENDED_EEROS_VERSION 1.2)
+set(RECOMMENDED_EEROS_VERSION 1.3)
 
 
 # Load CMake modules library at specified version
