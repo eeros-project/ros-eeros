@@ -10,7 +10,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/JointState.h>
 
-namespace halros {
+namespace roseeros {
   
 class AnalogOut : public eeros::hal::ScalableOutput<double> {
  public:

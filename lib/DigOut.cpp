@@ -1,6 +1,6 @@
 #include "../include/DigOut.hpp"
 
-using namespace halros;
+using namespace roseeros;
 
 DigOut::DigOut(	std::string id,
 				void* libHandle,
@@ -104,5 +104,5 @@ extern "C" eeros::hal::Output<bool> *createDigOut(	std::string id,
 													uint32_t channel,
 													bool inverted,
 													std::string additionalArguments){
-	return new halros::DigOut(id, libHandle, device, subDeviceNumber, channel, inverted, additionalArguments);
+	return new roseeros::DigOut(id, libHandle, device, subDeviceNumber, channel, inverted, additionalArguments);
 }

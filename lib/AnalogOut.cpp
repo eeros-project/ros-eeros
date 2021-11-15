@@ -2,7 +2,7 @@
 #include <iostream>
 #include <ros/callback_queue.h>
 
-using namespace halros;
+using namespace roseeros;
 
 AnalogOut::AnalogOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel,
                     double scale, double offset, double rangeMin, double rangeMax, std::string unit, std::string additionalArguments) 
@@ -155,6 +155,6 @@ extern "C"{
   eeros::hal::ScalableOutput<double> *createAnalogOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,
                                                       uint32_t channel, double scale, double offset, double rangeMin, double rangeMax,
                                                       std::string unit, std::string additionalArguments) {
-    return new halros::AnalogOut(id, libHandle, device, subDeviceNumber, channel, scale, offset, rangeMin, rangeMax, unit, additionalArguments);
+    return new roseeros::AnalogOut(id, libHandle, device, subDeviceNumber, channel, scale, offset, rangeMin, rangeMax, unit, additionalArguments);
   }
 }
