@@ -5,11 +5,8 @@ using namespace roseeros;
 std::map<std::string, RosNodeDevice *> RosNodeDevice::devices;
 
 RosNodeDevice::RosNodeDevice(std::string rosNode) {
-  char* dummyArgs[] = {NULL};
-  int dummyArgc = sizeof(dummyArgs) / sizeof(dummyArgs[0]) - 1;
-  ros::init(dummyArgc, dummyArgs, rosNode);
-  ros::NodeHandle n;
-  rosNodeHandle = std::make_shared<ros::NodeHandle>(n);
+  rclcpp::init(0, NULL);
+  rosNodeHandle = rclcpp::Node::make_shared(rosNode);
   devices[rosNode] = this;
 }
 
@@ -17,7 +14,7 @@ RosNodeDevice::~RosNodeDevice() {
   devices.clear();
 }
 
-std::shared_ptr<ros::NodeHandle> RosNodeDevice::getRosNodeHandle() {
+rclcpp::Node::SharedPtr RosNodeDevice::getRosNodeHandle() {
   return rosNodeHandle;
 }
 

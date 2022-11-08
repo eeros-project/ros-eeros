@@ -3,23 +3,27 @@
 
 #include <string>
 #include <map>
-#include <ros/ros.h>
+#include <vector>
+#include <memory>
+
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/callback_group.hpp>
 
 namespace roseeros {
 
 static const std::string errorString = "\033[1;31mERROR ros-eeros: \033[0m";
 
 class RosNodeDevice {
- public:
-  virtual ~RosNodeDevice();
+  public:
+    virtual ~RosNodeDevice();
 
-  static RosNodeDevice* getDevice(std::string rosNode);
-  std::shared_ptr<ros::NodeHandle> getRosNodeHandle();
- 
- private:
-  RosNodeDevice(std::string rosNode);
-  std::shared_ptr<ros::NodeHandle> rosNodeHandle;
-  static std::map<std::string, RosNodeDevice*> devices;
+    static RosNodeDevice* getDevice(std::string rosNode);
+    rclcpp::Node::SharedPtr getRosNodeHandle();
+
+  private:
+    RosNodeDevice(std::string rosNode);
+    rclcpp::Node::SharedPtr rosNodeHandle;
+    static std::map<std::string, RosNodeDevice*> devices;
 };
 
 }
