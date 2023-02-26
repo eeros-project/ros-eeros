@@ -1,10 +1,10 @@
 #ifndef ROS_EEROS_DIGIN_HPP_
 #define ROS_EEROS_DIGIN_HPP_
 
-#include <eeros/hal/Input.hpp>
 #include "RosNodeDevice.hpp"
-#include <ros/ros.h>
-#include <sensor_msgs/BatteryState.h>
+#include <eeros/hal/Input.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/battery_state.hpp>
 
 namespace roseeros {
   
@@ -16,20 +16,16 @@ class DigIn : public eeros::hal::Input<bool> {
   virtual uint64_t getTimestamp() override;
     
  private:
-  // callback functions for ROS
-  void sensorMsgsBatteryStatePresent (const sensor_msgs::BatteryState::Type& msg) {
-    data = msg.present;
-    setTimeStamp(msg.header); 
-  }
-    
+  void callback(const sensor_msgs::msg::BatteryState& msg); // callback functions for ROS
   void setTimeStamp();
-  void setTimeStamp(const std_msgs::Header& header);
-  void setTimestampFromRosMsgHeader(const std_msgs::Header& header);
+  void setTimeStamp(const std_msgs::msg::Header& header);
+  void setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header);
+
   uint64_t timestamp;
   bool inverted;
   RosNodeDevice* dev;
-  std::shared_ptr<ros::NodeHandle> rosNodeHandle;
-  ros::Subscriber subscriber;
+  rclcpp::Node::SharedPtr rosNodeHandle;
+  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr subscriber;
   uint32_t subDeviceNumber;
   uint32_t channel;
   bool data; 

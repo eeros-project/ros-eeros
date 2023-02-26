@@ -45,16 +45,23 @@ link_directories(${EEROS_LIB_DIR})
 
 
 ## Find package ROS
-find_package( roslib REQUIRED )
-add_definitions(-DROS_FOUND)
-set( ROS_FOUND true)
-include_directories( "${roslib_INCLUDE_DIRS}" )
-list(APPEND ROS_LIBRARIES "${roslib_LIBRARIES}")
-find_package( rosconsole REQUIRED)
-list(APPEND ROS_LIBRARIES "${rosconsole_LIBRARIES}")
-find_package( roscpp REQUIRED )
-list(APPEND ROS_LIBRARIES "${roscpp_LIBRARIES}")
-list(APPEND EXTERNAL_LIBS "${ROS_LIBRARIES}")
+find_package( rclcpp REQUIRED )
+if (rclcpp_FOUND)
+  message(STATUS "--> 'ROS2' is found.")
+else()
+  message(FATAL_ERROR "ERROR: ROS2 is not installed or setup.bash (for ROS2) was not executed.")
+endif()
+include_directories(${rclcpp_INCLUDE_DIRS})
+list(APPEND ROS_LIBRARIES "${rclcpp_LIBRARIES}")
+find_package(rcl_interfaces REQUIRED)
+include_directories(${rcl_interfaces_INCLUDE_DIRS})
+list(APPEND ROS_LIBRARIES "${rcl_interfaces_LIBRARIES}")
+find_package(std_msgs REQUIRED)
+include_directories(${std_msgs_INCLUDE_DIRS})
+list(APPEND ROS_LIBRARIES ${std_msgs_LIBRARIES})
+find_package( sensor_msgs REQUIRED )
+include_directories(${sensor_msgs_INCLUDE_DIRS})
+list(APPEND ROS_LIBRARIES ${sensor_msgs_LIBRARIES})
 
 
 include_directories(${ADDITIONAL_INCLUDE_DIRS})
@@ -68,10 +75,10 @@ createPackageFiles(ros-eerosConfig.cmake.in include/ lib/)
 
 
 INSTALL(FILES 
-	${CMAKE_CURRENT_SOURCE_DIR}/include/RosNodeDevice.hpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/DigIn.hpp 
-	${CMAKE_CURRENT_SOURCE_DIR}/include/DigOut.hpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/AnalogIn.hpp
-	${CMAKE_CURRENT_SOURCE_DIR}/include/AnalogOut.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/RosNodeDevice.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DigIn.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DigOut.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/AnalogIn.hpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/AnalogOut.hpp
 DESTINATION include/ros-eeros)
 

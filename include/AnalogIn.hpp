@@ -1,13 +1,13 @@
 #ifndef ROS_EEROS_ANALOGIN_HPP_
 #define ROS_EEROS_ANALOGIN_HPP_
 
-#include <eeros/hal/ScalableInput.hpp>
 #include "RosNodeDevice.hpp"
-#include <ros/ros.h>
-#include <std_msgs/Header.h>
-#include <std_msgs/Float64.h>
-#include <sensor_msgs/LaserScan.h>
-#include <sensor_msgs/JointState.h>
+#include <eeros/hal/ScalableInput.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/header.hpp>
+#include <std_msgs/msg/float64.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 namespace roseeros {
   
@@ -21,57 +21,62 @@ class AnalogIn : public eeros::hal::ScalableInput<double> {
   virtual uint64_t getTimestamp() override;
   
  private:
-  void stdMsgsFloat64Data (const std_msgs::Float64::Type& msg) {
+  void callbackFloat64Data (const std_msgs::msg::Float64& msg) {
     data = msg.data;
     setTimeStamp();
   }
   
-  void sensorMsgsLaserScanAngleMin (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanAngleMin (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.angle_min;
     setTimeStamp(msg.header); 
   }
-  void sensorMsgsLaserScanAngleMax (const sensor_msgs::LaserScan::Type& msg) {
-    data = msg.angle_max;
-    setTimeStamp(msg.header);}
 
-  void sensorMsgsLaserScanAngleIncrement (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanAngleMax (const sensor_msgs::msg::LaserScan& msg) {
+    data = msg.angle_max;
+    setTimeStamp(msg.header);
+
+  }
+
+  void callbackLaserScanAngleIncrement (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.angle_increment;
     setTimeStamp(msg.header);
   }
   
-  void sensorMsgsLaserScanTimeIncrement (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanTimeIncrement (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.time_increment;
     setTimeStamp(msg.header); 
   }
   
-  void sensorMsgsLaserScanScanTime (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanScanTime (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.scan_time;
     setTimeStamp(msg.header); 
   }
   
-  void sensorMsgsLaserScanRangeMin (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanRangeMin (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.range_min;
     setTimeStamp(msg.header); 
   }
   
-  void sensorMsgsLaserScanRangeMax (const sensor_msgs::LaserScan::Type& msg) {
+  void callbackLaserScanRangeMax (const sensor_msgs::msg::LaserScan& msg) {
     data = msg.range_max;
     setTimeStamp(msg.header); 
   }
   
-  void sensorMsgsJointStatePosition0		(const sensor_msgs::JointState::Type& msg) {
+  void callbackJointStatePosition0 (const sensor_msgs::msg::JointState& msg) {
     data = msg.position[0];
     setTimeStamp(msg.header); 
   }
 
   void setTimeStamp();
-  void setTimeStamp(const std_msgs::Header& header);
-  void setTimestampFromRosMsgHeader(const std_msgs::Header& header);
+  void setTimeStamp(const std_msgs::msg::Header& header);
+  void setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header);
   uint64_t timestamp;
 
   RosNodeDevice* dev;
-  std::shared_ptr<ros::NodeHandle> rosNodeHandle;
-  ros::Subscriber subscriber;
+  rclcpp::Node::SharedPtr rosNodeHandle;
+  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr float64Subscriber;
+  rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laserScanSubscriber;
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr jointStateSubscriber;
   uint32_t subDeviceNumber;
   uint32_t channel;
   double data; 

@@ -1,6 +1,8 @@
 #include "../include/DigIn.hpp"
+#include <eeros/control/ros2/EerosRosTools.hpp>
 
 using namespace roseeros;
+using std::placeholders::_1;
 
 DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,
       uint32_t channel, bool inverted, std::string additionalArguments ) 
@@ -23,8 +25,7 @@ DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDe
     std::string key = statement.substr(0, statement.find("="));
     std::string value = statement.substr(statement.find("=")+1);
     s = s.substr(s.find(";")+1);
-    
-    if ((key=="msgType") | (key==" msgType")) 
+    if ((key=="msgType") | (key==" msgType"))
       msgType = value;
     else if ((key=="topic") | (key==" topic")) 
       topic = value;
@@ -45,12 +46,17 @@ DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDe
   }
   
   // selecting callback function for ros
-  if (msgType == "sensor_msgs::BatteryState") {
-      subscriber = rosNodeHandle->subscribe(topic, queueSize, &DigIn::sensorMsgsBatteryStatePresent, this);
+  if (msgType == "sensor_msgs::msg::BatteryState") {
+    subscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::BatteryState>(topic, queueSize, std::bind(&DigIn::callback, this, _1));
   } else if ( msgType == "" )
     std::cout << errorString << "ros-eeros wrapper library: msgType is empty." << msgType << std::endl;
   else 
     std::cout << errorString << "ros-eeros wrapper library: msgType '" << msgType << "' is not defined" << std::endl;
+}
+
+void DigIn::callback (const sensor_msgs::msg::BatteryState& msg) {
+  data = msg.present;
+  setTimeStamp(msg.header);
 }
 
 bool DigIn::get() {
@@ -66,13 +72,13 @@ void DigIn::setTimeStamp() {
   timestamp = eeros::System::getTimeNs();
 }
 
-void DigIn::setTimeStamp(const std_msgs::Header& header) {
+void DigIn::setTimeStamp(const std_msgs::msg::Header& header) {
   if (useEerosSystemTime) setTimeStamp();
   else setTimestampFromRosMsgHeader(header);
 }
 
-void DigIn::setTimestampFromRosMsgHeader(const std_msgs::Header& header) {
-  timestamp = header.stamp.toNSec();
+void DigIn::setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header) {
+  timestamp = eeros::control::rosTools::toNanoSec(header.stamp);
 }
 
 extern "C" eeros::hal::Input<bool> *createDigIn(	std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,

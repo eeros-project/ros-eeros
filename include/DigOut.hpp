@@ -1,11 +1,10 @@
 #ifndef ROS_EEROS_DIGOUT_HPP_
 #define ROS_EEROS_DIGOUT_HPP_
 
-#include <eeros/hal/Output.hpp>
-#include <eeros/control/ros/EerosRosTools.hpp>
 #include "RosNodeDevice.hpp"
-#include <ros/ros.h>
-#include <sensor_msgs/BatteryState.h>
+#include <eeros/hal/Output.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/battery_state.hpp>
 
 namespace roseeros {
   
@@ -19,17 +18,14 @@ class DigOut : public eeros::hal::Output<bool> {
   virtual void setTimestampSignalIn(uint64_t timestampNs) override;
   
  private:
-  void (*setFunction) (const bool, const uint64_t timestamp, const ros::Publisher&);
-   
-  static void sensorMsgsBatteryStatePresent (const bool value, const uint64_t timestamp, const ros::Publisher& publisher);
-  
+  void (*setFunction) (const DigOut& self, const bool value, const uint64_t timestamp);
+  static void callback(const DigOut& self, const bool value, const uint64_t timestamp);
   
   RosNodeDevice* dev;
-  std::shared_ptr<ros::NodeHandle> rosNodeHandle;
-  ros::Subscriber subscriber;
+  rclcpp::Node::SharedPtr rosNodeHandle;
+  rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr publisher;
   uint32_t subDeviceNumber;
   uint32_t channel;
-  ros::Publisher publisher;
   bool data; 
   uint64_t timestampSignalIn;
   std::string msgType;

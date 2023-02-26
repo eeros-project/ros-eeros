@@ -1,14 +1,13 @@
 #ifndef ROS_EEROS_ANALOGOUT_HPP_
 #define ROS_EEROS_ANALOGOUT_HPP_
 
-#include <eeros/hal/ScalableOutput.hpp>
-#include <eeros/control/ros/EerosRosTools.hpp>
 #include "RosNodeDevice.hpp"
-#include <ros/ros.h>
-// 1.) include ROS message type
-#include <std_msgs/Float64.h>
-#include <sensor_msgs/LaserScan.h>
-#include <sensor_msgs/JointState.h>
+#include <eeros/hal/ScalableOutput.hpp>
+#include <eeros/control/ros2/EerosRosTools.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/float64.hpp>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 
 namespace roseeros {
   
@@ -22,24 +21,24 @@ class AnalogOut : public eeros::hal::ScalableOutput<double> {
   virtual void setTimestampSignalIn(uint64_t timestampNs) override;
   
  private:
-  void (*setFunction) (const double, const uint64_t, const ros::Publisher&);
-  // 2.) Declare set function for ROS
-  static void stdMsgsFloat64Data(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanAngleMin(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanAngleMax(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanAngleIncrement(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanTimeIncrement(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanScanTime(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanRangeMin(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsLaserScanRangeMax(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
-  static void sensorMsgsJointStateEffort0(const double value, const uint64_t timestamp, const ros::Publisher& publisher);
+  void (*setFunction) (const AnalogOut& self, const double, const uint64_t);
+  static void callbackFloat64Data(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanAngleMin(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanAngleMax(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanAngleIncrement(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanTimeIncrement(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanScanTime(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanRangeMin(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackLaserScanRangeMax(const AnalogOut& self,const double value, const uint64_t timestamp);
+  static void callbackJointStateEffort0(const AnalogOut& self,const double value, const uint64_t timestamp);
   
   RosNodeDevice* dev;
-  std::shared_ptr<ros::NodeHandle> rosNodeHandle;
-  ros::Subscriber subscriber;
+  rclcpp::Node::SharedPtr rosNodeHandle;
+  rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr float64Publisher;
+  rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr laserScanPublisher;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr jointStatePublisher;
   uint32_t subDeviceNumber;
   uint32_t channel;
-  ros::Publisher publisher;
   double data; 
   uint64_t timestampSignalIn;
   std::string msgType;

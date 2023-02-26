@@ -6,7 +6,7 @@ add_library(roseeros SHARED ${ROSEEROS_SRCS})
 add_library(roseeros_static ${ROSEEROS_SRCS})
 
 
-target_link_libraries(roseeros eeros)
+target_link_libraries(roseeros eeros ${ROS_LIBRARIES})
 set_target_properties(roseeros PROPERTIES VERSION ${LIBRARY_VERSION})
 
 target_link_libraries(roseeros_static eeros)
