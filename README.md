@@ -2,6 +2,8 @@
 Wrapper library for [EEROS Robotics Framework](https://github.com/eeros-project/eeros-framework) to interface with [ROS](http://www.ros.org/). 
 The ros-eeros wrapper library enables the usage of the ROS with the [EEROS Robotics Framework](https://github.com/eeros-project/eeros-framework). 
 
+You can use this hardware wrapper library for ROS1 and ROS2. However, please make sure to use release v1.0.1 with ROS1 and release v.2.0.0 with ROS2.
+
 
 ## Documentation
 - About ROS: http://www.ros.org/
