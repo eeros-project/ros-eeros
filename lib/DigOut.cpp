@@ -1,18 +1,17 @@
 #include "../include/DigOut.hpp"
-#include <eeros/control/ros2/EerosRosTools.hpp>
 
 using namespace roseeros;
 
 DigOut::DigOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel, bool inverted, std::string additionalArguments)
     : eeros::hal::Output<bool>(id, libHandle),
       dev(RosNodeDevice::getDevice(device)),
+      rosNodeHandle(dev->getRosNodeHandle()),
       subDeviceNumber(subDeviceNumber),
       channel(channel),
-      rosNodeHandle(dev->getRosNodeHandle()),
       data(false),
+      inverted(inverted),
       queueSize(1000),
-      callOne(true),
-      inverted(inverted) {
+      callOne(true) {
   // parsing additionalArguments:
   auto s = additionalArguments;
   bool stop = false;
@@ -51,7 +50,7 @@ DigOut::DigOut(std::string id, void* libHandle, std::string device, uint32_t sub
 
 void DigOut::callback(const DigOut& self, const bool value, const uint64_t timestamp){
   sensor_msgs::msg::BatteryState msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.present = static_cast<uint8_t>( value );
   self.publisher-> publish(msg);
 }

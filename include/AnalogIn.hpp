@@ -1,5 +1,4 @@
-#ifndef ROS_EEROS_ANALOGIN_HPP_
-#define ROS_EEROS_ANALOGIN_HPP_
+#pragma once
 
 #include "RosNodeDevice.hpp"
 #include <eeros/hal/ScalableInput.hpp>
@@ -17,7 +16,7 @@ class AnalogIn : public eeros::hal::ScalableInput<double> {
            double scale = 1, double offset = 0, double rangeMin = std::numeric_limits<double>::min(), 
            double rangeMax = std::numeric_limits<double>::max(), std::string unit = "", std::string additionalArguments = "");
   
-  virtual double get();
+  virtual double get() override;
   virtual uint64_t getTimestamp() override;
   
  private:
@@ -95,5 +94,3 @@ extern "C" {
                                                     uint32_t channel, double scale, double offset, double rangeMin, 
                                                     double rangeMax, std::string unit, std::string additionalArguments);
 }
-
-#endif /* ROS_EEROS_ANALOGIN_HPP_ */

@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
 project(ros-eeros)
 
 set(CMAKE_CXX_STANDARD 14)
 
 
-set(RECOMMENDED_EEROS_VERSION 1.3)
+set(RECOMMENDED_EEROS_VERSION 1.4)
 
 
 # Load CMake modules library at specified version
@@ -40,32 +40,32 @@ set(REQUIRED_DEGREE_OF_VERSION_COMPATIBILITY 2 CACHE STRING "The required degree
 checkVersionCompatibility(${EEROS_VERSION} ${VERSION_TO_FIND} ${REQUIRED_DEGREE_OF_VERSION_COMPATIBILITY})
 
 
-include_directories(${EEROS_INCLUDE_DIR})
-link_directories(${EEROS_LIB_DIR})
+#include_directories(${EEROS_INCLUDE_DIR})
+#link_directories(${EEROS_LIB_DIR})
 
 
-## Find package ROS
-find_package( rclcpp REQUIRED )
-if (rclcpp_FOUND)
-  message(STATUS "--> 'ROS2' is found.")
-else()
-  message(FATAL_ERROR "ERROR: ROS2 is not installed or setup.bash (for ROS2) was not executed.")
-endif()
-include_directories(${rclcpp_INCLUDE_DIRS})
-list(APPEND ROS_LIBRARIES "${rclcpp_LIBRARIES}")
-find_package(rcl_interfaces REQUIRED)
-include_directories(${rcl_interfaces_INCLUDE_DIRS})
-list(APPEND ROS_LIBRARIES "${rcl_interfaces_LIBRARIES}")
-find_package(std_msgs REQUIRED)
-include_directories(${std_msgs_INCLUDE_DIRS})
-list(APPEND ROS_LIBRARIES ${std_msgs_LIBRARIES})
-find_package( sensor_msgs REQUIRED )
-include_directories(${sensor_msgs_INCLUDE_DIRS})
-list(APPEND ROS_LIBRARIES ${sensor_msgs_LIBRARIES})
+### Find package ROS
+#find_package( rclcpp REQUIRED )
+#if (rclcpp_FOUND)
+  #message(STATUS "--> 'ROS2' is found.")
+#else()
+  #message(FATAL_ERROR "ERROR: ROS2 is not installed or setup.bash (for ROS2) was not executed.")
+#endif()
+#include_directories(${rclcpp_INCLUDE_DIRS})
+#list(APPEND ROS_LIBRARIES "${rclcpp_LIBRARIES}")
+#find_package(rcl_interfaces REQUIRED)
+#include_directories(${rcl_interfaces_INCLUDE_DIRS})
+#list(APPEND ROS_LIBRARIES "${rcl_interfaces_LIBRARIES}")
+#find_package(std_msgs REQUIRED)
+#include_directories(${std_msgs_INCLUDE_DIRS})
+#list(APPEND ROS_LIBRARIES ${std_msgs_LIBRARIES})
+#find_package( sensor_msgs REQUIRED )
+#include_directories(${sensor_msgs_INCLUDE_DIRS})
+#list(APPEND ROS_LIBRARIES ${sensor_msgs_LIBRARIES})
 
 
-include_directories(${ADDITIONAL_INCLUDE_DIRS})
-link_directories(${ADDITIONAL_LINK_DIRS})
+#include_directories(${ADDITIONAL_INCLUDE_DIRS})
+#link_directories(${ADDITIONAL_LINK_DIRS})
 
 
 add_subdirectory(lib)

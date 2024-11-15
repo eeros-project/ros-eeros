@@ -1,9 +1,7 @@
-#ifndef ROS_EEROS_ANALOGOUT_HPP_
-#define ROS_EEROS_ANALOGOUT_HPP_
+#pragma once
 
 #include "RosNodeDevice.hpp"
 #include <eeros/hal/ScalableOutput.hpp>
-#include <eeros/control/ros2/EerosRosTools.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float64.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -57,5 +55,3 @@ extern "C"{
                                                       double scale, double offset, double rangeMin, double rangeMax, std::string unit,
                                                       std::string additionalArguments);
 }
-
-#endif /* ROS_EEROS_ANALOGOUT_HPP_ */

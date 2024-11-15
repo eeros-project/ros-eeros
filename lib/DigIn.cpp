@@ -1,5 +1,4 @@
 #include "../include/DigIn.hpp"
-#include <eeros/control/ros2/EerosRosTools.hpp>
 
 using namespace roseeros;
 using std::placeholders::_1;
@@ -7,16 +6,17 @@ using std::placeholders::_1;
 DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,
       uint32_t channel, bool inverted, std::string additionalArguments ) 
     : Input<bool>(id, libHandle),
-      inverted(inverted),
+      dev(RosNodeDevice::getDevice(device)),
+      rosNodeHandle(dev->getRosNodeHandle()),
       subDeviceNumber(subDeviceNumber),
       channel(channel),
-      dev(RosNodeDevice::getDevice(device)),
-      rosNodeHandle(dev->getRosNodeHandle()), 
       data(false),
+      inverted(inverted),
       queueSize(1000),
       callOne(true),
       useEerosSystemTime(false) {
   // parsing additionalArguments:
+        std::cout << "ros-eeros wrapper library, DigIn: device=" << device << std::endl;
   auto s = additionalArguments;
   bool stop = false;
   while(!stop) {
@@ -78,7 +78,7 @@ void DigIn::setTimeStamp(const std_msgs::msg::Header& header) {
 }
 
 void DigIn::setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header) {
-  timestamp = eeros::control::rosTools::toNanoSec(header.stamp);
+  timestamp = eeros::control::RosTools::toNanoSec(header.stamp);
 }
 
 extern "C" eeros::hal::Input<bool> *createDigIn(	std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,

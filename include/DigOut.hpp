@@ -1,5 +1,4 @@
-#ifndef ROS_EEROS_DIGOUT_HPP_
-#define ROS_EEROS_DIGOUT_HPP_
+#pragma once
 
 #include "RosNodeDevice.hpp"
 #include <eeros/hal/Output.hpp>
@@ -8,8 +7,14 @@
 
 namespace roseeros {
   
+/**
+ *
+ */
 class DigOut : public eeros::hal::Output<bool> {
  public:
+  /**
+   *
+   */
   DigOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel,
          bool inverted = false, std::string additionalArguments = "");
   
@@ -27,6 +32,7 @@ class DigOut : public eeros::hal::Output<bool> {
   uint32_t subDeviceNumber;
   uint32_t channel;
   bool data; 
+  bool inverted;
   uint64_t timestampSignalIn;
   std::string msgType;
   std::string topic;
@@ -34,7 +40,6 @@ class DigOut : public eeros::hal::Output<bool> {
   int queueSize;
   bool callOne;
   bool useSignalInTimestamp;
-  bool inverted;
 };
 
 }
@@ -43,5 +48,3 @@ extern "C" {
   eeros::hal::Output<bool> *createDigOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, 
                                          uint32_t channel, bool inverted, std::string additionalArguments);
 }
-
-#endif /* ROS_EEROS_DIGOUT_HPP_ */

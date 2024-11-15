@@ -1,5 +1,4 @@
 #include "../include/AnalogIn.hpp"
-#include <eeros/control/ros2/EerosRosTools.hpp>
 
 using namespace roseeros;
 using std::placeholders::_1;
@@ -8,8 +7,8 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
                    double scale, double offset, double rangeMin, double rangeMax, std::string unit,
                    std::string additionalArguments) 
     : ScalableInput<double>(id, libHandle, scale, offset, rangeMin, rangeMax, unit),
-      subDeviceNumber(subDeviceNumber), channel(channel), dev(RosNodeDevice::getDevice(device)),
-      rosNodeHandle(dev->getRosNodeHandle()), data(0), queueSize(1000), callOne(true), useEerosSystemTime(false) {
+      dev(RosNodeDevice::getDevice(device)), rosNodeHandle(dev->getRosNodeHandle()),
+      subDeviceNumber(subDeviceNumber), channel(channel), data(0), queueSize(1000), callOne(true), useEerosSystemTime(false) {
   auto s = additionalArguments;
   bool stop = false;
   while(!stop) {
@@ -96,7 +95,7 @@ void AnalogIn::setTimeStamp(const std_msgs::msg::Header& header) {
 }
 
 void AnalogIn::setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header) {
-  timestamp = eeros::control::rosTools::toNanoSec(header.stamp);
+  timestamp = eeros::control::RosTools::toNanoSec(header.stamp);
 }
 
 

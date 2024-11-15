@@ -1,7 +1,8 @@
-#ifndef ROS_NODE_EEROS_DEVICE_HPP_
-#define ROS_NODE_EEROS_DEVICE_HPP_
+#pragma once
 
-#include <rclcpp/rclcpp.hpp>
+#include <eeros/control/ros2/RosTools.hpp>
+
+using namespace eeros::control;
 
 namespace roseeros {
 
@@ -13,27 +14,27 @@ class RosNodeDevice {
     devices.clear();
   }
 
-  static RosNodeDevice* getDevice(std::string rosNode) {
-    auto devIt = devices.find(rosNode);
+  static RosNodeDevice* getDevice(std::string name) {
+//     std::cout << "trying to get ROS node device with name " << name << std::endl;
+    auto devIt = devices.find(name);
     if (devIt != devices.end()) return devIt->second;
-    else return new RosNodeDevice(rosNode);
+    else return new RosNodeDevice(name);
   }
 
   rclcpp::Node::SharedPtr getRosNodeHandle() {
-    return rosNodeHandle;
+    return node;
   }
  
  private:
-  RosNodeDevice(std::string rosNode) {
-    rclcpp::init(0, NULL);
-    rosNodeHandle = rclcpp::Node::make_shared(rosNode);
-    devices[rosNode] = this;
+  RosNodeDevice(std::string name) {
+//     std::cout << "make a new ROS node device with name " << name << std::endl;
+    RosTools::initRos(0, nullptr);
+    node = RosTools::initNode(name);
+    devices[name] = this;
   }
 
-  rclcpp::Node::SharedPtr rosNodeHandle;
+  rclcpp::Node::SharedPtr node;
   static std::map<std::string, RosNodeDevice*> devices;
 };
 
 }
-
-#endif /* ROS_NODE_EEROS_DEVICE_HPP_ */ 

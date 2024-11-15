@@ -1,15 +1,14 @@
 #include "../include/AnalogOut.hpp"
-#include <iostream>
 
 using namespace roseeros;
 
 AnalogOut::AnalogOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel,
                     double scale, double offset, double rangeMin, double rangeMax, std::string unit, std::string additionalArguments) 
     : ScalableOutput<double>(id, libHandle, scale, offset, rangeMin, rangeMax, unit),
-      subDeviceNumber(subDeviceNumber),
-      channel(channel),
       dev(RosNodeDevice::getDevice(device)),
       rosNodeHandle(dev->getRosNodeHandle()), 
+      subDeviceNumber(subDeviceNumber),
+      channel(channel),
       data(NAN),
       queueSize(1000),
       callOne(true),
@@ -66,56 +65,56 @@ void AnalogOut::callbackFloat64Data(const AnalogOut& self, const double value, c
 // sensor_msgs::LaserScan
 void AnalogOut::callbackLaserScanAngleMin(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.angle_min = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanAngleMax(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.angle_max = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanAngleIncrement(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.angle_increment = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanTimeIncrement(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.time_increment = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanScanTime(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.scan_time = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanRangeMin(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.range_min = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackLaserScanRangeMax(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   msg.range_max = value;
   self.laserScanPublisher->publish(msg);
 }
 
 void AnalogOut::callbackJointStateEffort0(const AnalogOut& self, const double value, const uint64_t timestamp) {
   sensor_msgs::msg::JointState msg;
-  msg.header.stamp = eeros::control::rosTools::convertToRosTime(timestamp);
+  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
   std::vector<double> valueTmp (1, value);
   msg.effort = valueTmp;
   self.jointStatePublisher->publish(msg);
