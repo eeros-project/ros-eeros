@@ -9,11 +9,13 @@ DigOut::DigOut(std::string id, void* libHandle, std::string device, uint32_t sub
       subDeviceNumber(subDeviceNumber),
       channel(channel),
       data(false),
-      inverted(inverted),
-      queueSize(1000),
-      callOne(true) {
+      inverted(inverted) {
   // parsing additionalArguments:
   auto s = additionalArguments;
+  std::string msgType;
+  std::string topic;
+  std::string dataField;
+  int queueSize = 1000;
   bool stop = false;
   while(!stop) {
     if(s.find(";") == std::string::npos) stop=true;
@@ -29,48 +31,33 @@ DigOut::DigOut(std::string id, void* libHandle, std::string device, uint32_t sub
       dataField = value;
     else if ((key=="queueSize") | (key==" queueSize"))
       queueSize = std::stoi(value);
-    else if ((key=="useSignalInTimestamp") | (key==" useSignalInTimestamp")) {
-      if (value=="true") useSignalInTimestamp = true;
-      else if	(value=="false") useSignalInTimestamp = false;
-      else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
-    } else std::cout << errorString << "ros-eeros wrapper library: key '" << key << "' is not supported." << std::endl;
+    else std::cout << errorString << "ros-eeros wrapper library: key '" << key << "' is not supported." << std::endl;
   }
 
   // selecting callback function for ros
-  if (msgType == "sensor_msgs::msg::BatteryState") {
-    publisher = rosNodeHandle->create_publisher<sensor_msgs::msg::BatteryState>(topic, queueSize);
-    if (dataField == "present") setFunction = &callback;
-    else
-      std::cout << errorString << "ros-eeros wrapper library: dataField '" << dataField << "' of msgType '" << msgType << "' is not supported." << std::endl;
+  if (msgType == "eeros_msgs::msg::DigitalSignal") {
+    publisher = rosNodeHandle->create_publisher<eeros_msgs::msg::DigitalSignal>(topic, queueSize);
   } else if ( msgType == "" )
     std::cout << errorString << "ros-eeros wrapper library: msgType is empty." << msgType << std::endl;
   else
     std::cout << errorString << "ros-eeros wrapper library: msgType '" << msgType << "' is not defined" << std::endl;
 }
 
-void DigOut::callback(const DigOut& self, const bool value, const uint64_t timestamp){
-  sensor_msgs::msg::BatteryState msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.present = static_cast<uint8_t>( value );
-  self.publisher-> publish(msg);
-}
-
 bool DigOut::get() {
-  if(inverted) return !data;
   return data;
 }
 
 void DigOut::set(bool value) {
   if(inverted) value = !value;
   data = value;
-  uint64_t timestamp;
-  if (useSignalInTimestamp) timestamp = timestampSignalIn;
-  else timestamp = eeros::System::getTimeNs();
-  setFunction(*this, value, timestamp);
+  eeros_msgs::msg::DigitalSignal msg;
+  msg.timestamp = eeros::control::RosTools::convertToRosTime(timestamp);
+  msg.val = {value};
+  publisher-> publish(msg);
 }
 
-void DigOut::setTimestampSignalIn(uint64_t timestampNs) {
-  this->timestampSignalIn = timestampNs;
+void DigOut::setTimestampSignalIn(uint64_t t) {
+  this->timestamp = t;
 }
 
 extern "C" eeros::hal::Output<bool> *createDigOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,

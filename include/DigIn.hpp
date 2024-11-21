@@ -2,13 +2,15 @@
 
 #include "RosNodeDevice.hpp"
 #include <eeros/hal/Input.hpp>
+#include <eeros/control/Signal.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/battery_state.hpp>
+#include <eeros_msgs/msg/digital_signal.hpp>
 
 namespace roseeros {
   
 /**
- * Class for a digital input
+ * Class for a digital input. Reads a topic of type 'eeros_msgs::msg::DigitalSignal' with a
+ * single digital signal. The timestamp is taken from the ROS message.
  */
 class DigIn : public eeros::hal::Input<bool> {
  public:
@@ -19,35 +21,39 @@ class DigIn : public eeros::hal::Input<bool> {
    * @param id - id given by the parameter "signalId" in the hardware configuration file
    * @param libHandle - hardware wrapper library
    * @param device - name of the ROS node
-   * @param subDeviceNumber - number of
-   * @param channel - id given by the parameter "signalId" in the hardware configuration file
-   * @param inverted - id given by the parameter "signalId" in the hardware configuration file
+   * @param subDeviceNumber - number of subdevice, must correspond with subdevice type 'DigIn'
+   * @param channel - channel number
+   * @param inverted - if true, logical level is inverted when reading
+   * @param additionalArguments - e.g. "msgType", "topic", "dataField", "queueSize", "callOne"
    */
-  DigIn(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel, bool inverted = false,
-        std::string additionalArguments = "");
+  DigIn(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel,
+        bool inverted = false, std::string additionalArguments = "");
+
+  /**
+   * Reads the actual value on this input.
+   *
+   * @return value
+   */
   virtual bool get() override;
+
+  /**
+   * Reads the actual timestamp on this input.
+   *
+   * @return timestamp
+   */
   virtual uint64_t getTimestamp() override;
     
  private:
-  void callback(const sensor_msgs::msg::BatteryState& msg); // callback functions for ROS
-  void setTimeStamp();
-  void setTimeStamp(const std_msgs::msg::Header& header);
-  void setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header);
+  void callback(const eeros_msgs::msg::DigitalSignal& msg); // callback functions for ROS
 
-  uint64_t timestamp;
   RosNodeDevice* dev;
   rclcpp::Node::SharedPtr rosNodeHandle;
-  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr subscriber;
+  rclcpp::Subscription<eeros_msgs::msg::DigitalSignal>::SharedPtr subscriber;
   uint32_t subDeviceNumber;
   uint32_t channel;
   bool data;
   bool inverted;
-  std::string msgType;
-  std::string topic;
-  std::string dataField;
-  int queueSize;
-  bool callOne;
-  bool useEerosSystemTime;
+  timestamp_t timestamp;
 };
 
 }

@@ -9,13 +9,14 @@ AnalogOut::AnalogOut(std::string id, void* libHandle, std::string device, uint32
       rosNodeHandle(dev->getRosNodeHandle()), 
       subDeviceNumber(subDeviceNumber),
       channel(channel),
-      data(NAN),
-      queueSize(1000),
-      callOne(true),
-      useSignalInTimestamp(false) {
+      data(NAN) {
     
   // parsing additionalArguments:
   auto s = additionalArguments;
+  std::string msgType;
+  std::string topic;
+  std::string dataField;
+  int queueSize = 1000;
   bool stop = false;
   while(!stop) {
     if(s.find(";") == std::string::npos) stop=true;
@@ -27,99 +28,14 @@ AnalogOut::AnalogOut(std::string id, void* libHandle, std::string device, uint32
     else if ((key=="topic") | (key==" topic")) topic = value;
     else if ((key=="dataField") | (key==" dataField")) dataField = value;
     else if ((key=="queueSize") | (key==" queueSize")) queueSize = std::stoi(value);
-    else if ((key=="useSignalInTimestamp") | (key==" useSignalInTimestamp")) {
-      if (value=="true") useSignalInTimestamp = true;
-      else if (value=="false") useSignalInTimestamp = false;
-      else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
-    } else std::cout << errorString << "ros-eeros wrapper library: key '" << key << "' is not supported." << std::endl;
+    else std::cout << errorString << "ros-eeros wrapper library: key '" << key << "' is not supported." << std::endl;
   }
-    
-  // set callback function
-  if (msgType == "std_msgs::msg::Float64") {
-    float64Publisher = rosNodeHandle->create_publisher<std_msgs::msg::Float64>(topic, queueSize);
-    setFunction = &callbackFloat64Data;
-  } else if (msgType == "sensor_msgs::LaserScan") {
-    laserScanPublisher = rosNodeHandle->create_publisher<sensor_msgs::msg::LaserScan>(topic, queueSize);
-    if (dataField == "angle_min") setFunction = &callbackLaserScanAngleMin;
-    else if (dataField == "angle_max") setFunction = &callbackLaserScanAngleMax;
-    else if (dataField == "angle_increment") setFunction = &callbackLaserScanAngleIncrement;
-    else if (dataField == "time_increment") setFunction = &callbackLaserScanTimeIncrement;
-    else if (dataField == "scan_time") setFunction = &callbackLaserScanScanTime;
-    else if (dataField == "range_min") setFunction = &callbackLaserScanRangeMin;
-    else if (dataField == "range_max") setFunction = &callbackLaserScanRangeMax;
-    else std::cout << errorString << "ros-eeros wrapper library: dataField '" << dataField << "' of msgType '" << msgType << "' is not supported." << std::endl;
-  } else if (msgType == "sensor_msgs::msg::JointState") {
-    jointStatePublisher = rosNodeHandle->create_publisher<sensor_msgs::msg::JointState>(topic, queueSize);
-    if (dataField == "effort0") setFunction = &callbackJointStateEffort0;
-    else std::cout << errorString << "ros-eeros wrapper library: dataField '" << dataField << "' of msgType '" << msgType << "' is not supported." << std::endl;
+
+  if (msgType == "eeros_msgs::msg::AnalogSignal") {
+    publisher = rosNodeHandle->create_publisher<eeros_msgs::msg::AnalogSignal>(topic, queueSize);
   } else if (msgType == "") std::cout << errorString << "ros-eeros wrapper library: msgType is empty." << msgType << std::endl;
   else std::cout << errorString << "ros-eeros wrapper library: msgType '" << msgType << "' is not defined" << std::endl;
 }
-
-void AnalogOut::callbackFloat64Data(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  std_msgs::msg::Float64 msg;
-  msg.data = static_cast<double>( value );
-  self.float64Publisher->publish(msg);
-}
-
-// sensor_msgs::LaserScan
-void AnalogOut::callbackLaserScanAngleMin(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.angle_min = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanAngleMax(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.angle_max = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanAngleIncrement(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.angle_increment = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanTimeIncrement(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.time_increment = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanScanTime(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.scan_time = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanRangeMin(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.range_min = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackLaserScanRangeMax(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::LaserScan msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  msg.range_max = value;
-  self.laserScanPublisher->publish(msg);
-}
-
-void AnalogOut::callbackJointStateEffort0(const AnalogOut& self, const double value, const uint64_t timestamp) {
-  sensor_msgs::msg::JointState msg;
-  msg.header.stamp = eeros::control::RosTools::convertToRosTime(timestamp);
-  std::vector<double> valueTmp (1, value);
-  msg.effort = valueTmp;
-  self.jointStatePublisher->publish(msg);
-}
-
 
 // HAL functions
 double AnalogOut::get() {
@@ -130,16 +46,14 @@ void AnalogOut::set(double valueSet) {
   data = (valueSet - offset) / scale;
   if(data > maxOut) data = maxOut;
   if(data < minOut) data = minOut;
-  
-  uint64_t timestamp;
-  if (useSignalInTimestamp) timestamp = timestampSignalIn;
-  else timestamp = eeros::System::getTimeNs();
-    
-  setFunction(*this, data, timestamp);
+  eeros_msgs::msg::AnalogSignal msg;
+  msg.val = {data};
+  msg.timestamp = RosTools::convertToRosTime(timestamp);
+  publisher->publish(msg);
 }
 
-void AnalogOut::setTimestampSignalIn(uint64_t timestampNs) {
-  this->timestampSignalIn = timestampNs;
+void AnalogOut::setTimestampSignalIn(uint64_t t) {
+  this->timestamp = t;
 }
 
 extern "C"{

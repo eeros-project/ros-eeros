@@ -8,7 +8,7 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
                    std::string additionalArguments) 
     : ScalableInput<double>(id, libHandle, scale, offset, rangeMin, rangeMax, unit),
       dev(RosNodeDevice::getDevice(device)), rosNodeHandle(dev->getRosNodeHandle()),
-      subDeviceNumber(subDeviceNumber), channel(channel), data(0), queueSize(1000), callOne(true), useEerosSystemTime(false) {
+      subDeviceNumber(subDeviceNumber), channel(channel), data(NAN), queueSize(1000), callOne(true) {
   auto s = additionalArguments;
   bool stop = false;
   while(!stop) {
@@ -17,7 +17,6 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
     std::string key = statement.substr(0, statement.find("="));
     std::string value = statement.substr(statement.find("=")+1);
     s = s.substr(s.find(";")+1);
-    
     if ((key=="msgType") | (key==" msgType")) 
       msgType = value;
     else if ((key=="topic") | (key==" topic")) 
@@ -26,11 +25,7 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
       dataField = value;
     else if	((key=="queueSize") | (key==" queueSize"))
       queueSize = std::stoi(value);
-    else if ((key=="useEerosSystemTime") | (key==" useEerosSystemTime")) {
-      if (value=="true") useEerosSystemTime = true;
-      else if (value=="false") useEerosSystemTime = false;
-      else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
-    } else if ((key=="callOne") | (key==" callOne")) {
+    else if ((key=="callOne") | (key==" callOne")) {
       if (value=="true") callOne = true;
       else if (value=="false") callOne = false;
       else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
@@ -38,25 +33,8 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
       std::cout << errorString << "ros-eeros wrapper library: key '" << key << "' is not supported." << std::endl;
   }
   
-  if (msgType == "std_msgs::msg::Float64") {
-    float64Subscriber = rosNodeHandle->create_subscription<std_msgs::msg::Float64>(topic, queueSize, std::bind(&AnalogIn::callbackFloat64Data, this, _1));
-  } else if ( msgType == "sensor_msgs::msg::LaserScan" ) {
-    if ( dataField == "angle_min" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanAngleMin, this, _1));
-    else if ( dataField == "angle_max" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanAngleMax, this, _1));
-    else if ( dataField == "angle_increment" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanAngleIncrement, this, _1));
-    else if ( dataField == "time_increment" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanTimeIncrement, this, _1));
-    else if ( dataField == "scan_time" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanScanTime, this, _1));
-    else if ( dataField == "range_min" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanRangeMin, this, _1));
-    else if ( dataField == "range_max" )
-      laserScanSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::LaserScan>(topic, queueSize, std::bind(&AnalogIn::callbackLaserScanRangeMax, this, _1));
-    else
-      std::cout << errorString << "ros-eeros wrapper library: dataField '" << dataField << "' of msgType '" << msgType << "' is not supported." << std::endl;
+  if (msgType == "eeros_msgs::msg::AnalogSignal") {
+    subscriber = rosNodeHandle->create_subscription<eeros_msgs::msg::AnalogSignal>(topic, queueSize, std::bind(&AnalogIn::callback, this, _1));
   } else if ( msgType == "sensor_msgs::msg::JointState" ) {
     if ( dataField == "position0" )
       jointStateSubscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::JointState>(topic, queueSize, std::bind(&AnalogIn::callbackJointStatePosition0, this, _1));
@@ -84,18 +62,14 @@ uint64_t AnalogIn::getTimestamp() {
   return timestamp;
 }
 
-void AnalogIn::setTimeStamp() {
+void AnalogIn::callback (const eeros_msgs::msg::AnalogSignal& msg) {
+  data = msg.val[0];
+  timestamp = eeros::control::RosTools::convertToEerosTime(msg.timestamp);
+}
+
+void AnalogIn::callbackJointStatePosition0 (const sensor_msgs::msg::JointState& msg) {
+  data = msg.position[0];
   timestamp = eeros::System::getTimeNs();
-}
-
-void AnalogIn::setTimeStamp(const std_msgs::msg::Header& header) {
-  if (useEerosSystemTime) setTimeStamp();
-  else setTimestampFromRosMsgHeader(header);
-  
-}
-
-void AnalogIn::setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header) {
-  timestamp = eeros::control::RosTools::toNanoSec(header.stamp);
 }
 
 

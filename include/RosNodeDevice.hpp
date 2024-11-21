@@ -11,6 +11,7 @@ static const std::string errorString = "\033[1;31mERROR ros-eeros: \033[0m";
 class RosNodeDevice {
  public:
   virtual ~RosNodeDevice() {
+    RosTools::cleanup();
     devices.clear();
   }
 
@@ -27,7 +28,7 @@ class RosNodeDevice {
  
  private:
   RosNodeDevice(std::string name) {
-//     std::cout << "make a new ROS node device with name " << name << std::endl;
+    std::cout << "make a new ROS node device with name " << name << std::endl;
     RosTools::initRos(0, nullptr);
     node = RosTools::initNode(name);
     devices[name] = this;

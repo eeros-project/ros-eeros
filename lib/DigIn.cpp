@@ -11,13 +11,14 @@ DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDe
       subDeviceNumber(subDeviceNumber),
       channel(channel),
       data(false),
-      inverted(inverted),
-      queueSize(1000),
-      callOne(true),
-      useEerosSystemTime(false) {
+      inverted(inverted) {
   // parsing additionalArguments:
-        std::cout << "ros-eeros wrapper library, DigIn: device=" << device << std::endl;
   auto s = additionalArguments;
+  std::string msgType;
+  std::string topic;
+  std::string dataField;
+  int queueSize = 1000;
+  bool callOne = true;
   bool stop = false;
   while(!stop) {
     if(s.find(";") == std::string::npos) stop=true;
@@ -33,11 +34,7 @@ DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDe
       dataField = value;
     else if ((key=="queueSize") | (key==" queueSize"))
       queueSize = std::stoi(value);
-    else if ((key=="useEerosSystemTime") | (key==" useEerosSystemTime")) {
-      if (value=="true") useEerosSystemTime = true;
-      else if (value=="false") useEerosSystemTime = false;
-      else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
-    } else if	((key=="callOne") | (key==" callOne")) {
+    else if	((key=="callOne") | (key==" callOne")) {
       if (value=="true") callOne = true;
       else if (value=="false") callOne = false;
       else std::cout << errorString << "ros-eeros wrapper library: value '" << value << "' for key '" << key << "' is not supported." << std::endl;
@@ -46,17 +43,17 @@ DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDe
   }
   
   // selecting callback function for ros
-  if (msgType == "sensor_msgs::msg::BatteryState") {
-    subscriber = rosNodeHandle->create_subscription<sensor_msgs::msg::BatteryState>(topic, queueSize, std::bind(&DigIn::callback, this, _1));
+  if (msgType == "eeros_msgs::msg::DigitalSignal") {
+    subscriber = rosNodeHandle->create_subscription<eeros_msgs::msg::DigitalSignal>(topic, queueSize, std::bind(&DigIn::callback, this, _1));
   } else if ( msgType == "" )
     std::cout << errorString << "ros-eeros wrapper library: msgType is empty." << msgType << std::endl;
   else 
     std::cout << errorString << "ros-eeros wrapper library: msgType '" << msgType << "' is not defined" << std::endl;
 }
 
-void DigIn::callback (const sensor_msgs::msg::BatteryState& msg) {
-  data = msg.present;
-  setTimeStamp(msg.header);
+void DigIn::callback (const eeros_msgs::msg::DigitalSignal& msg) {
+  data = msg.val[0];
+  timestamp = eeros::control::RosTools::convertToEerosTime(msg.timestamp);
 }
 
 bool DigIn::get() {
@@ -68,18 +65,6 @@ uint64_t DigIn::getTimestamp() {
   return timestamp;
 }
 
-void DigIn::setTimeStamp() {
-  timestamp = eeros::System::getTimeNs();
-}
-
-void DigIn::setTimeStamp(const std_msgs::msg::Header& header) {
-  if (useEerosSystemTime) setTimeStamp();
-  else setTimestampFromRosMsgHeader(header);
-}
-
-void DigIn::setTimestampFromRosMsgHeader(const std_msgs::msg::Header& header) {
-  timestamp = eeros::control::RosTools::toNanoSec(header.stamp);
-}
 
 extern "C" eeros::hal::Input<bool> *createDigIn(	std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,
                           uint32_t channel, bool inverted, std::string additionalArguments) {
