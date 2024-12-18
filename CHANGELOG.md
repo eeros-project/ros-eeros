@@ -4,10 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## Unreleased
-(v2.1.0 targeted for 2024-08-31) ([GitHub compare v2.0.1...master](https://github.com/eeros-project/ros-eeros/compare/v2.0.1...master))
+## v2.0.2
+(2024-12-18) ([GitHub compare v2.0.1...v2.0.2](https://github.com/eeros-project/ros-eeros/compare/v2.0.1...v2.0.2))
 
 ### Added Features
+* Change to eeros namespace
+* Change to new RosTool version
+* Add new custom eeros_msgs package
+* Cleanup CMake
 
 
 ## v2.0.1
