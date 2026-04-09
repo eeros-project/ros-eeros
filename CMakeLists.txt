@@ -21,7 +21,7 @@ target_link_libraries("${PROJECT_NAME}_ros" EEROS::eeros)
 
 target_include_directories("${PROJECT_NAME}_ros" PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
-target_compile_features("${PROJECT_NAME}_ros" PRIVATE cxx_std_14)
+target_compile_features("${PROJECT_NAME}_ros" PRIVATE cxx_std_20)
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
   COMPATIBILITY AnyNewerVersion

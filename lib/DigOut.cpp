@@ -4,7 +4,7 @@ using namespace roseeros;
 
 DigOut::DigOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel, bool inverted, std::string additionalArguments)
     : eeros::hal::Output<bool>(id, libHandle),
-      dev(RosNodeDevice::getDevice(device)),
+      dev(&RosNodeDevice::getDevice(device)),
       rosNodeHandle(dev->getRosNodeHandle()),
       subDeviceNumber(subDeviceNumber),
       channel(channel),

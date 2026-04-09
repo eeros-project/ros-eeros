@@ -6,7 +6,7 @@ using std::placeholders::_1;
 DigIn::DigIn(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber,
       uint32_t channel, bool inverted, std::string additionalArguments ) 
     : Input<bool>(id, libHandle),
-      dev(RosNodeDevice::getDevice(device)),
+      dev(&RosNodeDevice::getDevice(device)),
       rosNodeHandle(dev->getRosNodeHandle()),
       subDeviceNumber(subDeviceNumber),
       channel(channel),

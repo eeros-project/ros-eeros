@@ -34,21 +34,21 @@ class DigOut : public eeros::hal::Output<bool> {
    *
    * @return value
    */
-  virtual bool get() override;
+  bool get() override;
 
   /**
    * Sets the value to be packed into the ROS message.
    *
    * @param value - value
    */
-  virtual void set(bool value) override;
+  void set(bool value) override;
 
   /**
    * Sets the timestamp.
    *
    * @param t - timestamp
    */
-  virtual void setTimestampSignalIn(uint64_t t) override;
+  void setTimestampSignalIn(uint64_t t) override;
   
  private:
   RosNodeDevice* dev;

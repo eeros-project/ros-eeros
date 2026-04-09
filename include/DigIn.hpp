@@ -34,14 +34,14 @@ class DigIn : public eeros::hal::Input<bool> {
    *
    * @return value
    */
-  virtual bool get() override;
+  bool get() override;
 
   /**
    * Reads the actual timestamp on this input.
    *
    * @return timestamp
    */
-  virtual uint64_t getTimestamp() override;
+  uint64_t getTimestamp() override;
     
  private:
   void callback(const eeros_msgs::msg::DigitalSignal& msg); // callback functions for ROS

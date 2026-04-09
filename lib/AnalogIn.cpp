@@ -7,8 +7,13 @@ AnalogIn::AnalogIn(std::string id, void* libHandle, std::string device, uint32_t
                    double scale, double offset, double rangeMin, double rangeMax, std::string unit,
                    std::string additionalArguments) 
     : ScalableInput<double>(id, libHandle, scale, offset, rangeMin, rangeMax, unit),
-      dev(RosNodeDevice::getDevice(device)), rosNodeHandle(dev->getRosNodeHandle()),
-      subDeviceNumber(subDeviceNumber), channel(channel), data(NAN), queueSize(1000), callOne(true) {
+      dev(&RosNodeDevice::getDevice(device)), 
+      rosNodeHandle(dev->getRosNodeHandle()),
+      subDeviceNumber(subDeviceNumber), 
+      channel(channel), 
+      data(NAN), 
+      queueSize(1000), 
+      callOne(true) {
   auto s = additionalArguments;
   bool stop = false;
   while(!stop) {

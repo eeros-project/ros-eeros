@@ -5,7 +5,7 @@ using namespace roseeros;
 AnalogOut::AnalogOut(std::string id, void* libHandle, std::string device, uint32_t subDeviceNumber, uint32_t channel,
                     double scale, double offset, double rangeMin, double rangeMax, std::string unit, std::string additionalArguments) 
     : ScalableOutput<double>(id, libHandle, scale, offset, rangeMin, rangeMax, unit),
-      dev(RosNodeDevice::getDevice(device)),
+      dev(&RosNodeDevice::getDevice(device)),
       rosNodeHandle(dev->getRosNodeHandle()), 
       subDeviceNumber(subDeviceNumber),
       channel(channel),
